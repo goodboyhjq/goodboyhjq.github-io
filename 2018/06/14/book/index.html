@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>bootm | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Bootloader作用 1.初始化软硬件 2.启动操作系统 内核分类 1.zImage 不加信息头的内核 2.uImage 加信息头后的内核，用bootm命令来启动 bootm作用 1.检测信息头：压缩、操作系统、幻数 2.根据OS信息调用相应的处理函数：获取内核地址、知道CPU型号、设置启动参数 以上显示在摘要中">
+<meta name="keywords" content="-嵌入式裸机开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bootm">
+<meta property="og:url" content="http://yoursite.com/2018/06/14/book/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Bootloader作用 1.初始化软硬件 2.启动操作系统 内核分类 1.zImage 不加信息头的内核 2.uImage 加信息头后的内核，用bootm命令来启动 bootm作用 1.检测信息头：压缩、操作系统、幻数 2.根据OS信息调用相应的处理函数：获取内核地址、知道CPU型号、设置启动参数 以上显示在摘要中">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-14T12:06:39.894Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bootm">
+<meta name="twitter:description" content="Bootloader作用 1.初始化软硬件 2.启动操作系统 内核分类 1.zImage 不加信息头的内核 2.uImage 加信息头后的内核，用bootm命令来启动 bootm作用 1.检测信息头：压缩、操作系统、幻数 2.根据OS信息调用相应的处理函数：获取内核地址、知道CPU型号、设置启动参数 以上显示在摘要中">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-book" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/14/book/" class="article-date">
+  <time datetime="2018-06-14T11:50:04.000Z" itemprop="datePublished">2018-06-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/LINUX内核驱动开发/">-LINUX内核驱动开发</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      bootm
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Bootloader作用</p>
+<p>1.初始化软硬件</p>
+<p>2.启动操作系统</p>
+<p>内核分类</p>
+<p>1.zImage 不加信息头的内核</p>
+<p>2.uImage 加信息头后的内核，用bootm命令来启动</p>
+<p>bootm作用</p>
+<p>1.检测信息头：压缩、操作系统、幻数</p>
+<p>2.根据OS信息调用相应的处理函数：获取内核地址、知道CPU型号、设置启动参数</p>
+<p>以上显示在摘要中<br><a id="more"></a><br>以下是余下全文</p>
+<p>代码编写</p>
+<p>1.获取启动地址</p>
+<p>2.设置启动参数</p>
+<p>2.1设置核心启动参数</p>
+<p>2.2设置内存参数</p>
+<p>2.3设置命令行参数</p>
+<p>2.4设置参数结束行标志</p>
+<p>3.启动操作系统</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>头文件<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>（很重要，加大仔细看，刚开始并不懂为什么要右移2位）<br>include “net.h” /<strong><strong><strong>***</strong></strong></strong> *宏定义 <strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong>/ </p>
+<p>#define KERNEL_ZERO 0 </p>
+<p>#define KERNEL_MACH 1999 //开发板ID，要与内核ID匹配 </p>
+<p>#define KERNEL_ADDR TFTP_DONWLOAD //内核地址 </p>
+<p>#define ATAG_ADDR 0x30000100 //标签地址 </p>
+<p>#define ATAG_CORE 0x54410001 //核心标签 </p>
+<p>#define ATAG_MEM 0x54410002 //内存标签 </p>
+<p>#define ATAG_CMDLINE 0x54410009 //命令标签 </p>
+<p>#define ATAG_NONE 0x00000000 //结束标签 </p>
+<p>#define MEM_ADDR 0x30000000 //内存地址 </p>
+<p>#define MEM_SIZE 0x04000000 //内存大小 </p>
+<p>#define tag_size(type) ( (sizeof(struct tag_header)+sizeof(struct type))&gt;&gt;2 ) //计算标签大小，除以4表示标签大小以4字节计算，用于移动标签指针 </p>
+<h2 id="define-tag-next-type-struct-tag-unsigned-int-type-type-gt-hdr-size-移动标签指针"><a href="#define-tag-next-type-struct-tag-unsigned-int-type-type-gt-hdr-size-移动标签指针" class="headerlink" title="#define tag_next(type) ( (struct tag )((unsigned int )(type)+(type)-&gt;hdr.size) ) //移动标签指针"></a>#define tag_next(type) ( (struct tag <em>)((unsigned int </em>)(type)+(type)-&gt;hdr.size) ) //移动标签指针</h2><p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>类型定义<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>struct tag_header {<br>    unsigned int size;<br>    unsigned int tag;<br>};</p>
+<p>struct tag_core {<br>    unsigned int flags;<br>    unsigned int pagesize;<br>    unsigned int rootdev;<br>};<br>struct tag_mem32 {<br>    unsigned int size;<br>    unsigned int start;<br>};</p>
+<p>struct tag_cmdline {<br>    char cmdline[1];<br>};</p>
+<p>struct tag{<br>    struct tag_header hdr;<br>    union{<br>        struct tag_core core;<br>        struct tag_mem32 mem;<br>        struct tag_cmdline cmdline;<br>    }u;<br>};<br>struct tag *params;</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>全局变量声明<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>const char *cmdline = “noinitrd console=ttySAC0,115200 init=/init root=/dev/nfs rw nfsroot=192.168.1.101:/space/temp/nfs ip=192.168.1.230:192.168.1.101:192.168.1.1:255.255.255.0::eth0:off”;</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>函数原型声明<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void do_bootm_linux();<br>void setup_core_tag();<br>void setup_memory_tag();<br>void setup_cmdline_tag();<br>void setup_end_tag();</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>名称:do_bootm_linux
+</em>参数:</p>
+<ul>
+<li>none<br>*返回:</li>
+<li><p>none<br><em>功能:启动Linux系统<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void do_bootm_linux(){<br>void  (*theKernel)(int zero, int arch, unsigned int params);   //内核函数指针</p>
+<p>//设置启动地址<br>theKernel = (void (*)(int, int, unsigned int))KERNEL_ADDR;   //将地址转换为函数指针</p>
+<p>//设置启动参数<br>setup_core_tag();      //设置核心参数<br>setup_memory_tag();    //设置内存参数<br>setup_cmdline_tag();   //设置命令参数<br>setup_end_tag();       //设置结束标志</p>
+<p>//启动操作系统<br>theKernel(KERNEL_ZERO, KERNEL_MACH, ATAG_ADDR);   //不再返回<br>}</p>
+</li>
+</ul>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>名称:setup_core_tag
+</em>参数:</p>
+<ul>
+<li>none<br>*返回:</li>
+<li><p>none<br><em>功能:设置核心参数<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void setup_core_tag(){<br>//设置标签地址<br>params = (struct tag *)ATAG_ADDR;</p>
+<p>//设置核心参数<br>params-&gt;hdr.tag = ATAG_CORE;<br>params-&gt;hdr.size = tag_size(tag_core);</p>
+<p>params-&gt;u.core.flags = 0;<br>params-&gt;u.core.pagesize = 4096;<br>params-&gt;u.core.rootdev = 0;</p>
+<p>//移动标签地址<br>params = tag_next(params);<br>}</p>
+</li>
+</ul>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>名称:setup_memory_tag
+</em>参数:</p>
+<ul>
+<li>none<br>*返回:</li>
+<li><p>none<br><em>功能:设置内存参数<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void setup_memory_tag(){<br>//设置内存参数<br>params-&gt;hdr.tag = ATAG_MEM;<br>params-&gt;hdr.size = tag_size(tag_mem32);</p>
+<p>params-&gt;u.mem.start = MEM_ADDR;<br>params-&gt;u.mem.size = MEM_SIZE;</p>
+<p>//移动标签地址<br>params = tag_next(params);<br>}</p>
+</li>
+</ul>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>名称:setup_cmdline_tag
+</em>参数:</p>
+<ul>
+<li>none<br>*返回:</li>
+<li><p>none<br><em>功能:设置命令参数<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void setup_cmdline_tag(){<br>//设置命令参数<br>params-&gt;hdr.tag = ATAG_CMDLINE;<br>params-&gt;hdr.size = (sizeof(struct tag_header)+strlen(cmdline)+1+4)&gt;&gt;2;   //‘+1’表示字符结束标志’\0’, ‘+4’表示除以4转换成整型时向上取整</p>
+<p>strcpy(params-&gt;u.cmdline.cmdline, cmdline);</p>
+<p>//移动标签地址<br>params = tag_next(params);<br>}</p>
+</li>
+</ul>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br><em>名称:setup_cmdline_tag
+</em>参数:</p>
+<ul>
+<li>none<br>*返回:</li>
+<li>none<br><em>功能:设置结束标志<br><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em>/<br>void setup_end_tag(){<br>params-&gt;hdr.tag = ATAG_NONE;<br>params-&gt;hdr.size = 0;<br>}</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/06/14/book/" data-id="cjieiawzr0000sc2y3rj5w5s2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/嵌入式裸机开发/">-嵌入式裸机开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/14/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/LINUX内核驱动开发/">-LINUX内核驱动开发</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/嵌入式裸机开发/">-嵌入式裸机开发</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/嵌入式裸机开发/" style="font-size: 10px;">-嵌入式裸机开发</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/06/14/book/">bootm</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/14/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
